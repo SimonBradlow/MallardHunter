@@ -147,13 +147,6 @@ void display() {
     /*
      * Draw here
      */
-
-    // Add logic to draw the grass, the user, and the
-    // rest of the buildings. Note that the order of drawing
-    // matters because whatever is drawn last appears on top.
-    // Note that darkBlue buildings turn cyan when overlapping
-    // with the user, and purple buildings turn magenta.
-
     for (unique_ptr<Shape> &s : clouds) {
         // #polymorphism
         s->draw();
