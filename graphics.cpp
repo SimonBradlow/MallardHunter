@@ -1,6 +1,7 @@
 #include "graphics.h"
 #include "circle.h"
 #include "rect.h"
+#include "sprite.h"
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -80,12 +81,11 @@ Rect userHidden;
 Rect user1;
 Rect user2;
 
-Rect duck;
+Sprite duck;
 double duckDeltaX;
 double duckDeltaY;
 bool duckHit;
 int duckFlap;
-vector<vector<color>> duckColors;
 
 int score;
 Rect scoreUI;
@@ -145,7 +145,8 @@ void initDuck() {
     duckDeltaY = -3;
     duckHit = false;
     duckFlap = 0;
-    duckColors = duck1;
+    duck.setScale(8);
+    duck.setVec(duck1);
 }
 
 void init() {
@@ -216,18 +217,7 @@ void display() {
         s->draw();
     }
 
-    //duck.draw();
-    for (int i=0; i<8; ++i) {
-        for (int j=0; j<8; ++j) {
-            Rect temp;
-            temp.setSize(8, 8);
-            temp.setColor(duckColors[j][i]);
-            temp.setCenter(duck.getLeftX()+(i*8)+4, duck.getTopY()+(j*8)+4);
-            if (temp.getOpacity() != 0) {
-                temp.draw();
-            }
-        }
-    }
+    duck.draw();
 
     grass.draw();
 
@@ -322,19 +312,19 @@ void duckTimer(int dummy) {
 
 void flapTimer(int dummy) {
     if (duckFlap == 0) {
-        duckColors = duck2;
+        duck.setVec(duck2);
         duckFlap = 1;
     }
     else if (duckFlap == 1) {
-        duckColors = duck3;
+        duck.setVec(duck3);
         duckFlap = 2;
     }
     else if (duckFlap == 2) {
-        duckColors = duck1;
+        duck.setVec(duck1);
         duckFlap = 0;
     }
     else if (duckFlap == 3) {
-        duckColors = duck4;
+        duck.setVec(duck4);
         duckFlap++;
     }
     else if (duckFlap == 4 || duckFlap == 5 || duckFlap == 6 || duckFlap == 7) {
@@ -342,7 +332,7 @@ void flapTimer(int dummy) {
     }
     else if (duckFlap == 8) {
         duckHit = true;
-        duckColors = duck5;
+        duck.setVec(duck5);
     }
 }
 
