@@ -42,7 +42,6 @@ public:
         setHeight(v.size()*scale);
     }
     void draw() const {
-        this->draw();
         for (int i=0; i<(getWidth()/scale); ++i) {
             for (int j=0; j<(getHeight()/scale); ++j) {
                 Rect tmp;
