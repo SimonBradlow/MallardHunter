@@ -43,6 +43,6 @@ void cursor(GLFWwindow* window, double x, double y);
 void timer(int dummy);
 
 // Handle mouse button pressed and released events
-void mouse(int button, int state, int x, int y);
+void mouse(GLFWwindow* window, int button, int action, int mods);
 
 #endif /* graphics_h */
