@@ -198,6 +198,9 @@ void cursor(GLFWwindow* window, double x, double y) {
     user1.setCenter(x, y);
     user2.setCenter(x, y);
     userHidden.setCenter(x, y);
+}
+
+void mouse(GLFWwindow* window, int button, int action, int mods) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         shots -= 1;
         if (duck.isOverlapping(userHidden)) {
@@ -298,6 +301,9 @@ int main(int argc, char** argv) {
 
     // handles mouse movement
     glfwSetCursorPosCallback(window, cursor);
+
+    // handles mouse clicks
+    glfwSetMouseButtonCallback(window, mouse);
 
     // handles timer
     float time1 = 0.03f;
