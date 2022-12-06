@@ -1,5 +1,5 @@
 // sprite.h
-// Created by Simon Bradlow on 12/5/22.
+// Created by Simon Bradlow
 #ifndef DUCKHUNT_SPRITE_H
 #define DUCKHUNT_SPRITE_H
 
