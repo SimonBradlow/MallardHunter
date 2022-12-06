@@ -22,13 +22,15 @@ const color darkBlue(1/255.0, 110/255.0, 214/255.0);
 const color purple(119/255.0, 11/255.0, 224/255.0);
 const color orange(1, 163/255.0, 22/255.0);
 
-vector<unique_ptr<Shape>> clouds;
-
 Rect grass;
 
 Rect userHidden;
 Rect user1;
 Rect user2;
+
+vector<unique_ptr<Shape>> clouds;
+Sprite bigCloud = initSprite("bigCloud.png");
+Sprite smallCloud = initSprite("smallCloud.png");
 
 Sprite duck;
 Sprite duck1 = initSprite("duck1.png");
@@ -50,26 +52,25 @@ Rect shot2;
 Rect shot3;
 
 void initClouds() {
-    // Note: the Rect objects that make up the flat bottom of the clouds
-    // won't appear until you implement the Rect::draw method.
     clouds.clear();
-    dimensions cloudBottom(30, 30);
     // First cloud
-    clouds.push_back(make_unique<Circle>(white, 300, 100, 20));
-    clouds.push_back(make_unique<Circle>(white, 330, 100, 20));
-    clouds.push_back(make_unique<Circle>(white, 320, 90, 20));
-    clouds.push_back(make_unique<Rect>(white, 315, 105, cloudBottom));
+    Sprite cloud1;
+    cloud1.setScale(2);
+    cloud1.setVec(smallCloud);
+    cloud1.setCenter(width/4, 55);
+    clouds.push_back(make_unique<Sprite>(cloud1));
     // Second cloud
-    clouds.push_back(make_unique<Circle>(white, 100, 80, 20));
-    clouds.push_back(make_unique<Circle>(white, 130, 80, 20));
-    clouds.push_back(make_unique<Circle>(white, 120, 70, 20));
-    clouds.push_back(make_unique<Rect>(white, 115, 85, cloudBottom));
+    Sprite cloud2;
+    cloud2.setScale(2);
+    cloud2.setVec(bigCloud);
+    cloud2.setCenter(width/2, 85);
+    clouds.push_back(make_unique<Sprite>(cloud2));
     // Third cloud
-    clouds.push_back(make_unique<Circle>(white, 450, 50, 20));
-    clouds.push_back(make_unique<Circle>(white, 480, 50, 20));
-    clouds.push_back(make_unique<Circle>(white, 470, 40, 20));
-    clouds.push_back(make_unique<Rect>(white, 465, 55, cloudBottom));
-
+    Sprite cloud3;
+    cloud3.setScale(2);
+    cloud3.setVec(smallCloud);
+    cloud3.setCenter(width/4, 105);
+    clouds.push_back(make_unique<Sprite>(cloud3));
 }
 
 void initGrass() {
@@ -224,14 +225,13 @@ void cursor(GLFWwindow* window, double x, double y) {
 }
 
 void cloudTimer(int dummy) {
-
     for (unique_ptr<Shape> &s : clouds) {
         // Move all the clouds to the left
         s->moveX(-1);
         // If a shape has moved off the screen
-        if (s->getCenterX() < -20) {
+        if (s->getRightX() < 0) {
             // Set it to the right of the screen so that it passes through again
-            s->setCenterX(520);
+            s->setCenterX(width+32);
         }
     }
 }
