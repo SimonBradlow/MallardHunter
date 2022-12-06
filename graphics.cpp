@@ -2,7 +2,6 @@
 #include "circle.h"
 #include "rect.h"
 #include "sprite.h"
-#include "spriteSheet.h"
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -10,6 +9,18 @@ using namespace std;
 
 GLdouble width, height;
 int wd;
+const color clear (0, 0, 0, 0);
+const color white(1, 1, 1);
+const color black(0, 0, 0);
+const color magenta(1, 0, 1);
+const color cyan (0, 1, 1);
+const color skyBlue(77/255.0, 213/255.0, 240/255.0);
+const color grassGreen(26/255.0, 176/255.0, 56/255.0);
+const color darkGreen(0/255.0, 70/255.0, 0/255.0);
+const color brickRed(201/255.0, 20/255.0, 20/255.0);
+const color darkBlue(1/255.0, 110/255.0, 214/255.0);
+const color purple(119/255.0, 11/255.0, 224/255.0);
+const color orange(1, 163/255.0, 22/255.0);
 
 vector<unique_ptr<Shape>> clouds;
 
@@ -20,6 +31,11 @@ Rect user1;
 Rect user2;
 
 Sprite duck;
+Sprite duck1 = initSprite("duck1.png");
+Sprite duck2 = initSprite("duck2.png");
+Sprite duck3 = initSprite("duck3.png");
+Sprite duckShot = initSprite("duckShot.png");
+Sprite duckFalling = initSprite("duckFalling.png");
 double duckDeltaX;
 double duckDeltaY;
 bool duckHit;
@@ -76,7 +92,7 @@ void initUser() {
 }
 
 void initDuck() {
-    duck.setScale(8);
+    duck.setScale(2);
     duck.setVec(duck1);
     duck.setCenter(width/2, height);
     duckDeltaX = rand() % 6 - 3;
@@ -260,7 +276,7 @@ void flapTimer(int dummy) {
         duckFlap = 0;
     }
     else if (duckFlap == 3) {
-        duck.setVec(duck4);
+        duck.setVec(duckShot);
         duckFlap++;
     }
     else if (duckFlap == 4 || duckFlap == 5 || duckFlap == 6 || duckFlap == 7) {
@@ -268,7 +284,7 @@ void flapTimer(int dummy) {
     }
     else if (duckFlap == 8) {
         duckHit = true;
-        duck.setVec(duck5);
+        duck.setVec(duckFalling);
     }
 }
 
