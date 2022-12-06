@@ -4,8 +4,6 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <chrono>
-#include <thread>
 using namespace std;
 
 GLdouble width, height;
@@ -90,6 +88,12 @@ int duckFlap;
 vector<vector<color>> duckColors;
 
 int score;
+Rect scoreUI;
+int shots;
+Rect shotsUI;
+Rect shot1;
+Rect shot2;
+Rect shot3;
 
 void initClouds() {
     // Note: the Rect objects that make up the flat bottom of the clouds
@@ -152,7 +156,26 @@ void init() {
     initDuck();
     initGrass();
     initUser();
+
     score = 0;
+    scoreUI.setSize(50, 20);
+    scoreUI.setColor(black);
+    scoreUI.setCenter((width/2)+60, height-30);
+
+    shots = 3;
+    shotsUI.setSize(110, 40);
+    shotsUI.setColor(black);
+    shotsUI.setCenter(65, height-30);
+
+    shot1.setColor(brickRed);
+    shot1.setSize(26, 30);
+    shot1.setCenter(31, height-30);
+    shot2.setColor(brickRed);
+    shot2.setSize(26, 30);
+    shot2.setCenter(65, height-30);
+    shot3.setColor(brickRed);
+    shot3.setSize(26, 30);
+    shot3.setCenter(99, height-30);
 }
 
 /* Initialize OpenGL Graphics */
@@ -211,6 +234,21 @@ void display() {
     user1.draw();
     user2.draw();
 
+    //scoreUI.draw();
+    shotsUI.draw();
+    if (shots > 0) {
+        shot1.draw();
+        if (shots > 1) {
+            shot2.draw();
+            if (shots > 2) {
+                shot3.draw();
+            }
+        }
+    }
+
+
+
+
     glFlush();  // Render now
 }
 
@@ -231,12 +269,14 @@ void cursor(GLFWwindow* window, double x, double y) {
     user1.setCenter(x, y);
     user2.setCenter(x, y);
     userHidden.setCenter(x, y);
-    if (duck.isOverlapping(userHidden)) {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        shots -= 1;
+        if (duck.isOverlapping(userHidden)) {
             duckDeltaX = 0;
             duckDeltaY = 0;
             duckFlap = 3;
             ++score;
+            shots = 3;
         }
     }
 }
@@ -257,24 +297,26 @@ void cloudTimer(int dummy) {
 void duckTimer(int dummy) {
     if (duckHit) {
         duckDeltaX = 0;
-        duckDeltaY = 6;
+        duckDeltaY = 8;
     }
     duck.moveY(duckDeltaY);
     duck.moveX(duckDeltaX/2);
     // If a shape has moved off the top of the screen
     if (duck.getCenterY() < -(duck.getHeight()/2)) {
-        double duckCenterOffset = rand() % 150 - 75;
-        duck.setCenter(width/2+duckCenterOffset, height);
-        duckDeltaX = rand() % 6 - 3;
+        if (shots > 0) {
+            double duckCenterOffset = rand() % 150 - 75;
+            duck.setCenter(width / 2 + duckCenterOffset, height);
+            duckDeltaX = rand() % 6 - 3;
+        }
     }
-    // If a shape has moved off the top of the screen
+    // If a shape has moved off the bottom of the screen
     if (duck.getCenterY() > height+(duck.getHeight()/2)) {
-        double duckCenterOffset = rand() % 150 - 75;
-        duck.setCenter(width/2+duckCenterOffset, height);
-        duckHit = false;
-        duckDeltaX = rand() % 6 - 3;
-        duckDeltaY = -3;
-        duckFlap = 0;
+            double duckCenterOffset = rand() % 150 - 75;
+            duck.setCenter(width/2+duckCenterOffset, height);
+            duckHit = false;
+            duckDeltaX = rand() % 6 - 3;
+            duckDeltaY = -3;
+            duckFlap = 0;
     }
 }
 
