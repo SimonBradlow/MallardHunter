@@ -6,7 +6,7 @@ if (WIN32)
     set(GLFW_LIBRARY_DIRS "C:/Program Files (x86)/glfw-3.3.8/lib")
 endif (WIN32)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 
