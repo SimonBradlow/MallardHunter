@@ -7,14 +7,8 @@
 using namespace std;
 
 GLdouble width, height;
-int wd;
 const color skyBlue(77/255.0, 213/255.0, 240/255.0);
-const color grassGreen(26/255.0, 176/255.0, 56/255.0);
 const color black(0, 0, 0);
-const color brickRed(201/255.0, 20/255.0, 20/255.0);
-
-Sprite grass;
-Sprite grassSprite = initSprite("grass.png");
 
 vector<unique_ptr<Shape>> clouds;
 Sprite bigCloud = initSprite("bigCloud.png");
@@ -30,6 +24,9 @@ double duckDeltaX;
 double duckDeltaY;
 bool duckHit;
 int duckFlap;
+
+Sprite grass;
+Sprite grassSprite = initSprite("grass.png");
 
 int score;
 Rect scoreUI;
@@ -71,7 +68,33 @@ void initGrass() {
     grass.setScale(4);
     grass.setVec(grassSprite);
     grass.setCenter(width/2, height-64);
-    grass.setColor(grassGreen);
+}
+
+void initDuck() {
+    duck.setScale(2);
+    duck.setVec(duck1);
+    duck.setCenter(width/2, height);
+    duckDeltaX = rand() % 6 - 3;
+    duckDeltaY = -3;
+    duckHit = false;
+    duckFlap = 0;
+}
+
+void initUI() {
+    score = 0;
+    shots = 3;
+    shotUI.setScale(3);
+    shotUI.setVec(shotUISprite);
+    shotUI.setCenter(54, height-38);
+    shot1.setScale(3);
+    shot1.setVec(shotSprite);
+    shot1.setCenter(shotUI.getCenterX()-20, height-50);
+    shot2.setScale(3);
+    shot2.setVec(shotSprite);
+    shot2.setCenter(shotUI.getCenterX(), height-50);
+    shot3.setScale(3);
+    shot3.setVec(shotSprite);
+    shot3.setCenter(shotUI.getCenterX()+20, height-50);
 }
 
 void initUser() {
@@ -87,16 +110,6 @@ void initUser() {
     userHidden.setCenter(0, 0);
 }
 
-void initDuck() {
-    duck.setScale(2);
-    duck.setVec(duck1);
-    duck.setCenter(width/2, height);
-    duckDeltaX = rand() % 6 - 3;
-    duckDeltaY = -3;
-    duckHit = false;
-    duckFlap = 0;
-}
-
 void init() {
     width = 512;
     height = 512;
@@ -104,26 +117,8 @@ void init() {
     initClouds();
     initDuck();
     initGrass();
+    initUI();
     initUser();
-
-    score = 0;
-    scoreUI.setSize(50, 20);
-    scoreUI.setColor(black);
-    scoreUI.setCenter((width/2)+60, height-30);
-
-    shots = 3;
-    shotUI.setScale(3);
-    shotUI.setVec(shotUISprite);
-    shotUI.setCenter(54, height-38);
-    shot1.setScale(3);
-    shot1.setVec(shotSprite);
-    shot1.setCenter(shotUI.getCenterX()-20, height-50);
-    shot2.setScale(3);
-    shot2.setVec(shotSprite);
-    shot2.setCenter(shotUI.getCenterX(), height-50);
-    shot3.setScale(3);
-    shot3.setVec(shotSprite);
-    shot3.setCenter(shotUI.getCenterX()+20, height-50);
 }
 
 /* Initialize OpenGL Graphics */
@@ -168,9 +163,6 @@ void display() {
 
     grass.draw();
 
-    user1.draw();
-    user2.draw();
-
     //scoreUI.draw();
     shotUI.draw();
     if (shots > 0) {
@@ -183,8 +175,8 @@ void display() {
         }
     }
 
-
-
+    user1.draw();
+    user2.draw();
 
     glFlush();  // Render now
 }
@@ -336,11 +328,9 @@ int main(int argc, char** argv) {
         }
 
         display();
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
