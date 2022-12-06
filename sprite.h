@@ -49,7 +49,7 @@ public:
                 tmp.setColor(vec[j][i]);
                 tmp.setCenter(((getLeftX() + (scale/2)) + (i*scale)),
                                ((getTopY() + (scale/2)) + (j*scale)));
-                if (tmp.getRed() != 149.0/255.0`) {
+                if (tmp.getRed() != 149.0/255.0) {
                 //if (tmp.getOpacity() != 0) {
                     tmp.draw();
                 }
