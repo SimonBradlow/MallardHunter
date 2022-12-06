@@ -9,24 +9,14 @@ using namespace std;
 
 GLdouble width, height;
 int wd;
-const color clear (0, 0, 0, 0);
-const color white(1, 1, 1);
-const color black(0, 0, 0);
-const color magenta(1, 0, 1);
-const color cyan (0, 1, 1);
 const color skyBlue(77/255.0, 213/255.0, 240/255.0);
 const color grassGreen(26/255.0, 176/255.0, 56/255.0);
-const color darkGreen(0/255.0, 70/255.0, 0/255.0);
+const color black(0, 0, 0);
 const color brickRed(201/255.0, 20/255.0, 20/255.0);
-const color darkBlue(1/255.0, 110/255.0, 214/255.0);
-const color purple(119/255.0, 11/255.0, 224/255.0);
-const color orange(1, 163/255.0, 22/255.0);
 
 Rect grass;
 
-Rect userHidden;
-Rect user1;
-Rect user2;
+
 
 vector<unique_ptr<Shape>> clouds;
 Sprite bigCloud = initSprite("bigCloud.png");
@@ -51,25 +41,29 @@ Rect shot1;
 Rect shot2;
 Rect shot3;
 
+Rect userHidden;
+Rect user1;
+Rect user2;
+
 void initClouds() {
     clouds.clear();
     // First cloud
     Sprite cloud1;
     cloud1.setScale(2);
     cloud1.setVec(smallCloud);
-    cloud1.setCenter(width/4, 55);
+    cloud1.setCenter(width/6, 55);
     clouds.push_back(make_unique<Sprite>(cloud1));
     // Second cloud
     Sprite cloud2;
     cloud2.setScale(2);
     cloud2.setVec(bigCloud);
-    cloud2.setCenter(width/2, 85);
+    cloud2.setCenter((width/6)*3, 85);
     clouds.push_back(make_unique<Sprite>(cloud2));
     // Third cloud
     Sprite cloud3;
     cloud3.setScale(2);
     cloud3.setVec(smallCloud);
-    cloud3.setCenter(width/4, 105);
+    cloud3.setCenter(((width/6)*5)+50, 105);
     clouds.push_back(make_unique<Sprite>(cloud3));
 }
 
@@ -229,9 +223,9 @@ void cloudTimer(int dummy) {
         // Move all the clouds to the left
         s->moveX(-1);
         // If a shape has moved off the screen
-        if (s->getRightX() < 0) {
+        if (s->getCenterX() < -48) {
             // Set it to the right of the screen so that it passes through again
-            s->setCenterX(width+32);
+            s->setCenterX(width + 48);
         }
     }
 }
