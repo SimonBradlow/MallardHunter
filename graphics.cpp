@@ -223,7 +223,7 @@ void display() {
             temp.setSize(8, 8);
             temp.setColor(duckColors[j][i]);
             temp.setCenter(duck.getLeftX()+(i*8)+4, duck.getTopY()+(j*8)+4);
-            if (temp.getRed() != 64.0/255.0) {
+            if (temp.getOpacity() != 0) {
                 temp.draw();
             }
         }
