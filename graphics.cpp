@@ -4,12 +4,15 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 GLdouble width, height;
 int wd;
 const color skyBlue(77/255.0, 213/255.0, 240/255.0);
 const color grassGreen(26/255.0, 176/255.0, 56/255.0);
+const color darkGreen(0/255.0, 65/255.0, 0/255.0);
 const color white(1, 1, 1);
 const color brickRed(201/255.0, 20/255.0, 20/255.0);
 const color darkBlue(1/255.0, 110/255.0, 214/255.0);
@@ -18,13 +21,75 @@ const color black(0, 0, 0);
 const color magenta(1, 0, 1);
 const color orange(1, 163/255.0, 22/255.0);
 const color cyan (0, 1, 1);
+const color clear (64.0/255.0, 64.0/255.0, 64.0/255.0, 0);
+
+vector<vector<color>> duck1 = {
+        {clear, black, clear, clear, darkGreen, darkGreen, darkGreen, clear},
+        {clear, black, black, clear, darkGreen, white, orange, orange},
+        {clear, black, black, black, darkGreen, darkGreen, darkGreen, clear,},
+        {clear, clear, black, black, black, black, black, black,},
+        {clear, clear, black, black, black, black, black, clear,},
+        {clear, orange, black, orange, black, clear, clear, clear,},
+        {clear, orange, clear, orange, clear, clear, clear, clear,},
+        {clear, clear, clear, clear, clear, clear, clear, clear,},
+};
+vector<vector<color>> duck2 = {
+        {clear, clear, clear, clear, darkGreen, darkGreen, darkGreen, clear},
+        {clear, clear, clear, clear, darkGreen, white, orange, orange},
+        {black, black, black, black, darkGreen, darkGreen, darkGreen, clear,},
+        {clear, black, black, black, black, black, black, clear,},
+        {clear, clear, black, black, black, black, black, black,},
+        {clear, orange, black, orange, black, black, clear, clear,},
+        {clear, orange, clear, orange, clear, clear, clear, clear,},
+        {clear, clear, clear, clear, clear, clear, clear, clear,},
+};
+vector<vector<color>> duck3 = {
+        {clear, clear, clear, clear, darkGreen, darkGreen, darkGreen, clear},
+        {clear, clear, clear, clear, darkGreen, white, orange, orange},
+        {clear, black, black, black, darkGreen, darkGreen, darkGreen, clear,},
+        {black, black, black, black, black, black, clear, clear,},
+        {clear, clear, black, black, black, black, black, clear,},
+        {clear, orange, black, orange, black, black, black, clear,},
+        {clear, orange, clear, orange, clear, black, black, clear,},
+        {clear, clear, clear, clear, clear, clear, black, clear,},
+};
+vector<vector<color>> duck4 = {
+        {black, clear, clear, darkGreen, darkGreen, darkGreen, clear, clear,},
+        {black, black, clear, darkGreen, white, orange, orange, black,},
+        {black, black, black, darkGreen, darkGreen, darkGreen, black, black,},
+        {clear, black, black, black, black, black, black, black,},
+        {clear, clear, black, black, brickRed, black, black, clear,},
+        {clear, clear, black, black, black, black, clear, clear,},
+        {black, clear, orange, black, orange, clear, clear, clear,},
+        {clear, clear, orange, clear, orange, clear, black, clear,},
+};
+vector<vector<color>> duck5 = {
+        {clear, black, clear, orange, clear, orange, clear, black},
+        {clear, black, black, orange, clear, orange, black, black},
+        {clear, black, black, black, black, black, black, black,},
+        {clear, clear, black, black, black, black, black, clear,},
+        {clear, clear, clear, black, black, black, clear, clear,},
+        {clear, clear, clear, darkGreen, darkGreen, darkGreen, clear, clear,},
+        {clear, clear, clear, darkGreen, white, orange, orange, clear,},
+        {clear, clear, clear, darkGreen, darkGreen, darkGreen, clear, clear,},
+};
 
 vector<unique_ptr<Shape>> clouds;
+
 Rect grass;
-vector<Rect> buildings1;
-vector<Rect> buildings2;
-vector<Rect> buildings3;
-Rect user;
+
+Rect userHidden;
+Rect user1;
+Rect user2;
+
+Rect duck;
+double duckDeltaX;
+double duckDeltaY;
+bool duckHit;
+int duckFlap;
+vector<vector<color>> duckColors;
+
+int score;
 
 void initClouds() {
     // Note: the Rect objects that make up the flat bottom of the clouds
@@ -55,59 +120,28 @@ void initGrass() {
     grass.setColor(grassGreen);
 }
 
-void initBuildings() {
-    // First vector is for closest buildings
-    int totalBuildingWidth = 0;
-    dimensions buildingSize;
-    while (totalBuildingWidth < width + 50) {
-        // Building height between 50-100
-        buildingSize.height = rand() % 51 + 50;
-        // Building width between 30-50
-        buildingSize.width = rand() % 21 + 30;
-        buildings1.push_back(Rect(brickRed,
-                                  totalBuildingWidth+(buildingSize.width/2)+5,
-                                  height-((buildingSize.height/2)+50),
-                                  buildingSize));
-        totalBuildingWidth += buildingSize.width + 5;
-    }
-
-    // Populate second set of buildings
-    totalBuildingWidth = 0;
-    while (totalBuildingWidth < width + 100) {
-        // Populate this vector of darkBlue buildings
-        // Building height between 100-200
-        buildingSize.height = rand() % 101 + 100;
-        // Building width between 50-100
-        buildingSize.width = rand() % 51 + 50;
-        buildings2.push_back(Rect(darkBlue,
-                                  totalBuildingWidth+(buildingSize.width/2)+5,
-                                  height-((buildingSize.height/2)+50),
-                                  buildingSize));
-        totalBuildingWidth += buildingSize.width + 5;
-    }
-
-    // Populate third set of buildings
-    totalBuildingWidth = 0;
-    while (totalBuildingWidth < width + 200) {
-        // Populate this vector of purple buildings
-        // Building height between 200-400
-        buildingSize.height = rand() % 201 + 200;
-        // Building width between 100-200
-        buildingSize.width = rand() % 101 + 100;
-        buildings3.push_back(Rect(purple,
-                                  totalBuildingWidth+(buildingSize.width/2)+5,
-                                  height-((buildingSize.height/2)+50),
-                                  buildingSize));
-        totalBuildingWidth += buildingSize.width + 5;
-    }
-}
-
 void initUser() {
     // Initialize the user to be a 20x20 white block
     // centered in the top left corner of the graphics window
-    user.setSize(20, 20);
-    user.setColor(white);
-    user.setCenter(0, 0);
+    user1.setSize(20, 2);
+    user1.setColor(black);
+    user1.setCenter(0, 0);
+    user2.setSize(2, 20);
+    user2.setColor(black);
+    user2.setCenter(0, 0);
+    userHidden.setSize(20, 20);
+    userHidden.setCenter(0, 0);
+}
+
+void initDuck() {
+    duck.setSize(64, 64);
+    duck.setColor(white);
+    duck.setCenter(width/2, height);
+    duckDeltaX = rand() % 6 - 3;
+    duckDeltaY = -3;
+    duckHit = false;
+    duckFlap = 0;
+    duckColors = duck1;
 }
 
 void init() {
@@ -115,9 +149,10 @@ void init() {
     height = 500;
     srand(time(0));
     initClouds();
+    initDuck();
     initGrass();
-    initBuildings();
     initUser();
+    score = 0;
 }
 
 /* Initialize OpenGL Graphics */
@@ -158,45 +193,23 @@ void display() {
         s->draw();
     }
 
+    //duck.draw();
+    for (int i=0; i<8; ++i) {
+        for (int j=0; j<8; ++j) {
+            Rect temp;
+            temp.setSize(8, 8);
+            temp.setColor(duckColors[j][i]);
+            temp.setCenter(duck.getLeftX()+(i*8)+4, duck.getTopY()+(j*8)+4);
+            if (temp.getRed() != 64.0/255.0) {
+                temp.draw();
+            }
+        }
+    }
+
     grass.draw();
 
-    for (Rect &r : buildings3) {
-        if (r.isOverlapping(user)) {
-            r.setColor(magenta);
-        } else {
-            r.setColor(purple);
-        }
-        r.draw();
-    }
-
-    for (Rect &r : buildings2) {
-        if (r.isOverlapping(user)) {
-            r.setColor(cyan);
-        } else {
-            r.setColor(darkBlue);
-        }
-        r.draw();
-    }
-
-    for (Rect &r : buildings1) {
-        if (r.isOverlapping(user)) {
-            r.setColor(orange);
-        } else {
-            r.setColor(brickRed);
-        }
-        r.draw();
-    }
-
-    user.draw();
-
-    // Check if the user is overlapping with the cloud
-    // Only check the Rect object within the cloud
-    for (int i = 3; i < clouds.size(); i += 4) {
-        if (dynamic_cast<Rect&>(*clouds[i]).isOverlapping(user)){
-            glfwTerminate();
-            exit(0);
-        }
-    }
+    user1.draw();
+    user2.draw();
 
     glFlush();  // Render now
 }
@@ -215,7 +228,17 @@ void cursor(GLFWwindow* window, double x, double y) {
     // passed in as parameters to this function. This will make
     // the user block move with the mouse.
     glfwGetCursorPos(window, &x, &y);
-    user.setCenter(x, y);
+    user1.setCenter(x, y);
+    user2.setCenter(x, y);
+    userHidden.setCenter(x, y);
+    if (duck.isOverlapping(userHidden)) {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            duckDeltaX = 0;
+            duckDeltaY = 0;
+            duckFlap = 3;
+            ++score;
+        }
+    }
 }
 
 void cloudTimer(int dummy) {
@@ -231,39 +254,53 @@ void cloudTimer(int dummy) {
     }
 }
 
-void buildingTimer(int dummy) {
-    // Make the other two vectors of buildings move.
-    // The larger the buildings, the slower they should move.
+void duckTimer(int dummy) {
+    if (duckHit) {
+        duckDeltaX = 0;
+        duckDeltaY = 6;
+    }
+    duck.moveY(duckDeltaY);
+    duck.moveX(duckDeltaX/2);
+    // If a shape has moved off the top of the screen
+    if (duck.getCenterY() < -(duck.getHeight()/2)) {
+        double duckCenterOffset = rand() % 150 - 75;
+        duck.setCenter(width/2+duckCenterOffset, height);
+        duckDeltaX = rand() % 6 - 3;
+    }
+    // If a shape has moved off the top of the screen
+    if (duck.getCenterY() > height+(duck.getHeight()/2)) {
+        double duckCenterOffset = rand() % 150 - 75;
+        duck.setCenter(width/2+duckCenterOffset, height);
+        duckHit = false;
+        duckDeltaX = rand() % 6 - 3;
+        duckDeltaY = -3;
+        duckFlap = 0;
+    }
+}
 
-    for (int i = 0; i < buildings1.size(); ++i) {
-        // Move all the red buildings to the left
-        buildings1[i].moveX(-3);
-        // If a shape has moved off the screen
-        if (buildings1[i].getCenterX() < -(buildings1[i].getWidth()/2)) {
-            // Set it to the right of the screen so that it passes through again
-            int buildingOnLeft = (i == 0) ? buildings1.size()-1 : i - 1;
-            buildings1[i].setCenterX(buildings1[buildingOnLeft].getCenterX() + buildings1[buildingOnLeft].getWidth()/2 + buildings1[i].getWidth()/2 + 5);
-        }
+void flapTimer(int dummy) {
+    if (duckFlap == 0) {
+        duckColors = duck2;
+        duckFlap = 1;
     }
-    for (int i = 0; i < buildings2.size(); ++i) {
-        // Move all the red buildings to the left
-        buildings2[i].moveX(-2);
-        // If a shape has moved off the screen
-        if (buildings2[i].getCenterX() < -(buildings2[i].getWidth()/2)) {
-            // Set it to the right of the screen so that it passes through again
-            int buildingOnLeft = (i == 0) ? buildings2.size()-1 : i - 1;
-            buildings2[i].setCenterX(buildings2[buildingOnLeft].getCenterX() + buildings2[buildingOnLeft].getWidth()/2 + buildings2[i].getWidth()/2 + 5);
-        }
+    else if (duckFlap == 1) {
+        duckColors = duck3;
+        duckFlap = 2;
     }
-    for (int i = 0; i < buildings3.size(); ++i) {
-        // Move all the red buildings to the left
-        buildings3[i].moveX(-1);
-        // If a shape has moved off the screen
-        if (buildings3[i].getCenterX() < -(buildings3[i].getWidth()/2)) {
-            // Set it to the right of the screen so that it passes through again
-            int buildingOnLeft = (i == 0) ? buildings3.size()-1 : i - 1;
-            buildings3[i].setCenterX(buildings3[buildingOnLeft].getCenterX() + buildings3[buildingOnLeft].getWidth()/2 + buildings3[i].getWidth()/2 + 5);
-        }
+    else if (duckFlap == 2) {
+        duckColors = duck1;
+        duckFlap = 0;
+    }
+    else if (duckFlap == 3) {
+        duckColors = duck4;
+        duckFlap++;
+    }
+    else if (duckFlap == 4 || duckFlap == 5 || duckFlap == 6 || duckFlap == 7) {
+        duckFlap++;
+    }
+    else if (duckFlap == 8) {
+        duckHit = true;
+        duckColors = duck5;
     }
 }
 
@@ -276,7 +313,7 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow(width, height, "Runner", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Duck Hunt", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -302,6 +339,7 @@ int main(int argc, char** argv) {
     // handles timer
     float time1 = 0.03f;
     float time2 = 0.05f;
+    float time3 = 0.03f;
     float previous = glfwGetTime();
 
     // Enter the event-processing loop
@@ -315,11 +353,16 @@ int main(int argc, char** argv) {
         previous = now;
         time1 -= delta;
         time2 -= delta;
+        time3 -= delta;
         if (time1 <= 0.f) {
-            buildingTimer(0);
+            duckTimer(0);
         }
         if (time2 <= 0.f) {
             cloudTimer(0);
+        }
+        if (time3 <= 0.f) {
+            flapTimer(0);
+            time3 = 0.10f;
         }
 
         display();
@@ -329,7 +372,6 @@ int main(int argc, char** argv) {
     }
 
     glfwDestroyWindow(window);
-
     glfwTerminate();
     exit(EXIT_SUCCESS);
     return 0;
