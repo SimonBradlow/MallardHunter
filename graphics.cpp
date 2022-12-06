@@ -1,5 +1,4 @@
 #include "graphics.h"
-#include "circle.h"
 #include "rect.h"
 #include "sprite.h"
 #include <iostream>
