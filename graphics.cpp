@@ -74,7 +74,7 @@ void initDuck() {
     duck.setScale(2);
     duck.setVec(duck1);
     duck.setCenter(width/2, height);
-    duckDeltaX = rand() % 6 - 3;
+    duckDeltaX = (rand() % 6 - 3) + 0.5;
     duckDeltaY = -3;
     duckHit = false;
     duckFlap = 0;
@@ -113,7 +113,7 @@ void initUser() {
 void init() {
     width = 512;
     height = 512;
-    srand(time(0));
+    srand(time(nullptr));
     initClouds();
     initDuck();
     initGrass();
@@ -234,7 +234,7 @@ void duckTimer(int dummy) {
         if (shots > 0) {
             double duckCenterOffset = rand() % 150 - 75;
             duck.setCenter(width / 2 + duckCenterOffset, height);
-            duckDeltaX = rand() % 6 - 3;
+            duckDeltaX = (rand() % 6 - 3) + 0.5;
         }
     }
     // If a shape has moved off the bottom of the screen
@@ -242,7 +242,7 @@ void duckTimer(int dummy) {
             double duckCenterOffset = rand() % 150 - 75;
             duck.setCenter(width/2+duckCenterOffset, height);
             duckHit = false;
-            duckDeltaX = rand() % 6 - 3;
+            duckDeltaX = (rand() % 6 - 3) + 0.5;
             duckDeltaY = -3;
             duckFlap = 0;
     }
