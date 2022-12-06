@@ -14,9 +14,8 @@ const color grassGreen(26/255.0, 176/255.0, 56/255.0);
 const color black(0, 0, 0);
 const color brickRed(201/255.0, 20/255.0, 20/255.0);
 
-Rect grass;
-
-
+Sprite grass;
+Sprite grassSprite = initSprite("grass.png");
 
 vector<unique_ptr<Shape>> clouds;
 Sprite bigCloud = initSprite("bigCloud.png");
@@ -68,8 +67,9 @@ void initClouds() {
 }
 
 void initGrass() {
-    grass.setCenter(250, 450);
-    grass.setSize(width, height/3);
+    grass.setScale(4);
+    grass.setVec(grassSprite);
+    grass.setCenter(width/2, height-64);
     grass.setColor(grassGreen);
 }
 
@@ -97,8 +97,8 @@ void initDuck() {
 }
 
 void init() {
-    width = 500;
-    height = 500;
+    width = 512;
+    height = 512;
     srand(time(0));
     initClouds();
     initDuck();
