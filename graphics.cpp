@@ -35,10 +35,12 @@ int duckFlap;
 int score;
 Rect scoreUI;
 int shots;
-Rect shotsUI;
-Rect shot1;
-Rect shot2;
-Rect shot3;
+Sprite shotUI;
+Sprite shotUISprite = initSprite("shotUI.png");
+Sprite shot1;
+Sprite shot2;
+Sprite shot3;
+Sprite shotSprite = initSprite("shotIcon.png");
 
 Rect userHidden;
 Rect user1;
@@ -111,19 +113,18 @@ void init() {
     scoreUI.setCenter((width/2)+60, height-30);
 
     shots = 3;
-    shotsUI.setSize(110, 40);
-    shotsUI.setColor(black);
-    shotsUI.setCenter(65, height-30);
-
-    shot1.setColor(brickRed);
-    shot1.setSize(26, 30);
-    shot1.setCenter(31, height-30);
-    shot2.setColor(brickRed);
-    shot2.setSize(26, 30);
-    shot2.setCenter(65, height-30);
-    shot3.setColor(brickRed);
-    shot3.setSize(26, 30);
-    shot3.setCenter(99, height-30);
+    shotUI.setScale(3);
+    shotUI.setVec(shotUISprite);
+    shotUI.setCenter(54, height-38);
+    shot1.setScale(3);
+    shot1.setVec(shotSprite);
+    shot1.setCenter(shotUI.getCenterX()-20, height-50);
+    shot2.setScale(3);
+    shot2.setVec(shotSprite);
+    shot2.setCenter(shotUI.getCenterX(), height-50);
+    shot3.setScale(3);
+    shot3.setVec(shotSprite);
+    shot3.setCenter(shotUI.getCenterX()+20, height-50);
 }
 
 /* Initialize OpenGL Graphics */
@@ -172,7 +173,7 @@ void display() {
     user2.draw();
 
     //scoreUI.draw();
-    shotsUI.draw();
+    shotUI.draw();
     if (shots > 0) {
         shot1.draw();
         if (shots > 1) {
