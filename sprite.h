@@ -28,7 +28,7 @@ public:
         else scale = 1;
     }
     void setScale(double s){
-        scale = s;
+        if (s > 0) scale = s;
     }
     void setVec(std::vector<std::vector<color>> &v) {
         vec = v;
@@ -42,6 +42,7 @@ public:
         setHeight(v.size()*scale);
     }
     void draw() const {
+        this->draw();
         for (int i=0; i<(getWidth()/scale); ++i) {
             for (int j=0; j<(getHeight()/scale); ++j) {
                 Rect tmp;
