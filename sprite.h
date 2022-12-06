@@ -30,7 +30,7 @@ public:
         scale = 1;
     }
 
-    Sprite(double s) {
+    explicit Sprite(double s) {
         if (s > 0) scale = s;
         else scale = 1;
     }
@@ -52,7 +52,7 @@ public:
         setHeight(v.size()*scale);
     }
 
-    void draw() const {
+    void draw() const override {
         for (int i=0; i<(getWidth()/scale); ++i) {
             for (int j=0; j<(getHeight()/scale); ++j) {
                 if (vec[j][i] != nullopt) {
@@ -68,7 +68,7 @@ public:
     }
 };
 
-Sprite initSprite(std::string filename) {
+Sprite initSprite(const std::string& filename) {
     Sprite tmp;
 
     std::string command;
