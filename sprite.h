@@ -52,6 +52,18 @@ public:
         setHeight(v.size()*scale);
     }
 
+    void setAlpha(double a) {
+        if (a > 0) {
+            for (int i=0; i<vec.size(); ++i) {
+                for (int j=0; j<vec[i].size(); ++j) {
+                    if (vec[i][j] != nullopt) {
+                        vec[i][j]->alpha = a;
+                    }
+                }
+            }
+        }
+    }
+
     void draw() const override {
         for (int i=0; i<(getWidth()/scale); ++i) {
             for (int j=0; j<(getHeight()/scale); ++j) {
