@@ -11,6 +11,7 @@ const color skyBlue(77/255.0, 213/255.0, 240/255.0);
 const color black(0, 0, 0);
 
 vector<unique_ptr<Shape>> clouds;
+vector<unique_ptr<Shape>> parallaxClouds;
 Sprite bigCloud = initSprite("bigCloud.png");
 Sprite smallCloud = initSprite("smallCloud.png");
 
@@ -44,24 +45,40 @@ Rect user2;
 
 void initClouds() {
     clouds.clear();
+    parallaxClouds.clear();
     // First cloud
     Sprite cloud1;
     cloud1.setScale(2);
     cloud1.setVec(smallCloud);
-    cloud1.setCenter(width/6, 55);
+    cloud1.setAlpha(0.5);
+    cloud1.setCenter(width/6, 75);
     clouds.push_back(make_unique<Sprite>(cloud1));
     // Second cloud
     Sprite cloud2;
     cloud2.setScale(2);
     cloud2.setVec(bigCloud);
-    cloud2.setCenter((width/6)*3, 85);
+    cloud2.setAlpha(0.5);
+    cloud2.setCenter((width/6)*3, 105);
     clouds.push_back(make_unique<Sprite>(cloud2));
     // Third cloud
     Sprite cloud3;
     cloud3.setScale(2);
     cloud3.setVec(smallCloud);
-    cloud3.setCenter(((width/6)*5)+50, 105);
+    cloud3.setAlpha(0.5);
+    cloud3.setCenter(((width/6)*5)+50, 125);
     clouds.push_back(make_unique<Sprite>(cloud3));
+    // Fourth cloud
+    Sprite cloud4;
+    cloud4.setScale(3);
+    cloud4.setVec(smallCloud);
+    cloud4.setCenter((width/3), 50);
+    parallaxClouds.push_back(make_unique<Sprite>(cloud4));
+    // Fifth cloud
+    Sprite cloud5;
+    cloud5.setScale(3);
+    cloud5.setVec(bigCloud);
+    cloud5.setCenter(width, 80);
+    parallaxClouds.push_back(make_unique<Sprite>(cloud5));
 }
 
 void initGrass() {
@@ -144,10 +161,18 @@ void display() {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // DO NOT CHANGE THIS LINE
 
+    // Enable alpha channel blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable( GL_BLEND );
+
     /*
      * Draw here
      */
     for (unique_ptr<Shape> &s : clouds) {
+        // #polymorphism
+        s->draw();
+    }
+    for (unique_ptr<Shape> &s : parallaxClouds) {
         // #polymorphism
         s->draw();
     }
@@ -209,11 +234,20 @@ void mouse(GLFWwindow* window, int button, int action, int mods) {
 void cloudTimer(int dummy) {
     for (unique_ptr<Shape> &s : clouds) {
         // Move all the clouds to the left
-        s->moveX(-1);
+        s->moveX(-0.4);
         // If a shape has moved off the screen
         if (s->getCenterX() < -48) {
             // Set it to the right of the screen so that it passes through again
             s->setCenterX(width + 48);
+        }
+    }
+    for (unique_ptr<Shape> &s : parallaxClouds) {
+        // Move all the clouds to the left
+        s->moveX(-0.8);
+        // If a shape has moved off the screen
+        if (s->getCenterX() < -72) {
+            // Set it to the right of the screen so that it passes through again
+            s->setCenterX(width + 72);
         }
     }
 }
