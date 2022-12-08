@@ -44,8 +44,11 @@ Rect user1;
 Rect user2;
 
 bool gameOver;
+bool playAgain;
 Sprite gameOverUI;
-Sprite gameOverUISprite = initSprite("gameOVer.png");
+Sprite playAgainUI;
+Sprite gameOverUISprite = initSprite("gameOver.png");
+Sprite playAgainUISprite = initSprite("playAgain.png");
 
 void initClouds() {
     clouds.clear();
@@ -120,6 +123,10 @@ void initUI() {
     gameOverUI.setVec(gameOverUISprite);
     gameOverUI.setAlpha(0.0);
     gameOverUI.setCenter(width/2, (height/2)-40);
+    playAgainUI.setScale(2);
+    playAgainUI.setVec(playAgainUISprite);
+    playAgainUI.setAlpha(0.0);
+    playAgainUI.setCenter(width / 2, (height / 2) + 40);
 }
 
 void initUser() {
@@ -140,6 +147,7 @@ void init() {
     height = 512;
     srand(time(nullptr));
     gameOver = false;
+    playAgain = false;
     initClouds();
     initDuck();
     initGrass();
@@ -202,7 +210,10 @@ void display() {
         }
     }
 
-    if (gameOver) gameOverUI.draw();
+    if (gameOver) {
+        gameOverUI.draw();
+        playAgainUI.draw();
+    }
 
     user1.draw();
     user2.draw();
@@ -216,6 +227,17 @@ void kbd(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwTerminate();
         exit(0);
+    }
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+        if (playAgain) {
+            gameOver = false;
+            playAgain = false;
+            score = 0;
+            shots = 3;
+            shotUI.setAlpha(1);
+            gameOverUI.setAlpha(0);
+            playAgainUI.setAlpha(0);
+        }
     }
 }
 
@@ -323,6 +345,8 @@ void gameOverTimer(int dummy) {
     shotUI.addAlpha(-0.05);
     // Game Over fades in after shotUI has faded out
     if (shotUI.opacity < 0) gameOverUI.addAlpha(0.05);
+    if (gameOverUI.opacity >= 1) playAgainUI.addAlpha(0.05);
+    if (playAgainUI.opacity >= 1) playAgain = true;
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
