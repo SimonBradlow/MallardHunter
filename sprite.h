@@ -24,13 +24,16 @@ class Sprite : public Rect {
 private:
     double scale;
 public:
+    double opacity;
     std::vector<std::vector<optional<color>>> vec;
 
     Sprite() {
+        opacity = 1;
         scale = 1;
     }
 
     explicit Sprite(double s) {
+        opacity = 1;
         if (s > 0) scale = s;
         else scale = 1;
     }
@@ -53,15 +56,18 @@ public:
     }
 
     void setAlpha(double a) {
-        if (a > 0) {
-            for (int i=0; i<vec.size(); ++i) {
-                for (int j=0; j<vec[i].size(); ++j) {
-                    if (vec[i][j] != nullopt) {
-                        vec[i][j]->alpha = a;
-                    }
+        opacity = a;
+        for (int i=0; i<vec.size(); ++i) {
+            for (int j=0; j<vec[i].size(); ++j) {
+                if (vec[i][j] != nullopt) {
+                    vec[i][j]->alpha = a;
                 }
             }
         }
+    }
+
+    void addAlpha(double a) {
+        setAlpha(opacity + a);
     }
 
     void draw() const override {
@@ -97,7 +103,7 @@ Sprite initSprite(const std::string& filename) {
             inFile >> r;
             inFile >> g;
             inFile >> b;
-            // if (a == 0);
+            // if (a == 0) tempVec.push_back(nullopt);
             if (r == 149) tempVec.push_back(nullopt);
             else tempVec.push_back(make_optional(color(r/255.0, g/255.0, b/255.0)));
         }

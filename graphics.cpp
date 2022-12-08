@@ -43,6 +43,10 @@ Rect userHidden;
 Rect user1;
 Rect user2;
 
+bool gameOver;
+Sprite gameOverUI;
+Sprite gameOverUISprite = initSprite("gameOVer.png");
+
 void initClouds() {
     clouds.clear();
     parallaxClouds.clear();
@@ -112,6 +116,10 @@ void initUI() {
     shot3.setScale(3);
     shot3.setVec(shotSprite);
     shot3.setCenter(shotUI.getCenterX()+20, height-50);
+    gameOverUI.setScale(3);
+    gameOverUI.setVec(gameOverUISprite);
+    gameOverUI.setAlpha(0.0);
+    gameOverUI.setCenter(width/2, (height/2)-40);
 }
 
 void initUser() {
@@ -131,6 +139,7 @@ void init() {
     width = 512;
     height = 512;
     srand(time(nullptr));
+    gameOver = false;
     initClouds();
     initDuck();
     initGrass();
@@ -193,6 +202,8 @@ void display() {
         }
     }
 
+    if (gameOver) gameOverUI.draw();
+
     user1.draw();
     user2.draw();
 
@@ -220,13 +231,15 @@ void cursor(GLFWwindow* window, double x, double y) {
 
 void mouse(GLFWwindow* window, int button, int action, int mods) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        shots -= 1;
-        if (duck.isOverlapping(userHidden)) {
-            duckDeltaX = 0;
-            duckDeltaY = 0;
-            duckFlap = 3;
-            ++score;
-            shots = 3;
+        if (shots > 0){
+            --shots;
+            if (duck.isOverlapping(userHidden)) {
+                duckDeltaX = 0;
+                duckDeltaY = 0;
+                duckFlap = 3;
+                ++score;
+                shots = 3;
+            }
         }
     }
 }
@@ -266,6 +279,7 @@ void duckTimer(int dummy) {
             duck.setCenter(width / 2 + duckCenterOffset, height);
             duckDeltaX = (rand() % 6 - 3) + 0.5;
         }
+        else gameOver = true;
     }
     // If a shape has moved off the bottom of the screen
     if (duck.getCenterY() > height+(duck.getHeight()/2)) {
@@ -291,6 +305,7 @@ void flapTimer(int dummy) {
         duck.setVec(duck1);
         duckFlap = 0;
     }
+    // only happens once a duck is hit
     else if (duckFlap == 3) {
         duck.setVec(duckShot);
         duckFlap++;
@@ -302,6 +317,12 @@ void flapTimer(int dummy) {
         duckHit = true;
         duck.setVec(duckFalling);
     }
+}
+
+void gameOverTimer(int dummy) {
+    shotUI.addAlpha(-0.05);
+    // Game Over fades in after shotUI has faded out
+    if (shotUI.opacity < 0) gameOverUI.addAlpha(0.05);
 }
 
 /* Main function: GLUT runs as a console application starting at main()  */
@@ -336,6 +357,7 @@ int main(int argc, char** argv) {
     float time1 = 0.03f;
     float time2 = 0.05f;
     float time3 = 0.03f;
+    float time4 = 0.03f;
     float previous = glfwGetTime();
 
     // Enter the event-processing loop
@@ -349,6 +371,7 @@ int main(int argc, char** argv) {
         time1 -= delta;
         time2 -= delta;
         time3 -= delta;
+        time4 -= delta;
         if (time1 <= 0.f) {
             duckTimer(0);
         }
@@ -358,6 +381,12 @@ int main(int argc, char** argv) {
         if (time3 <= 0.f) {
             flapTimer(0);
             time3 = 0.10f;
+        }
+
+        // Game over event
+        if ((gameOver) && (time4 <= 0.f)) {
+            gameOverTimer(0);
+            time4 = 0.03f;
         }
 
         display();
