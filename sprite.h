@@ -20,6 +20,9 @@ const std::string python = "py";
 const std::string python = "python3";
 #endif
 
+// TODO: fix opacity issue; possibly in spriteConverter.py
+// TODO: implement assignment operator
+// TODO: implement vector constructor
 class Sprite : public Rect {
 private:
     double scale;
