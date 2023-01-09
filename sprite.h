@@ -20,7 +20,6 @@ const std::string python = "py";
 const std::string python = "python3";
 #endif
 
-// TODO: fix opacity issue; possibly in spriteConverter.py
 // TODO: implement assignment operator
 // TODO: implement vector constructor
 class Sprite : public Rect {
@@ -106,8 +105,8 @@ Sprite initSprite(const std::string& filename) {
             inFile >> r;
             inFile >> g;
             inFile >> b;
-            // if (a == 0) tempVec.push_back(nullopt);
-            if (r == 149) tempVec.push_back(nullopt);
+            inFile >> a;
+            if (a == 0) tempVec.push_back(nullopt);
             else tempVec.push_back(make_optional(color(r/255.0, g/255.0, b/255.0)));
         }
         tmp.vec.push_back(tempVec);
